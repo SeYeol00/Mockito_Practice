@@ -19,12 +19,15 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
+    // Mock 빈을 주입받을 대상
     @InjectMocks
     UserServiceImpl userService;
 
+    // Mock으로 만들 대상
     @Mock
     UsersRepository usersRepository;
 
+    // Mock으로 만들 대상
     @Mock
     EmailVerificationServiceImpl emailVerificationService;
 
@@ -48,7 +51,10 @@ public class UserServiceTest {
     @Test
     void testCreateUser_whenUserDetailsProvided_returnsUserObject() {
         // Arrange
-        Mockito.when(usersRepository.save(any(User.class))).thenReturn(true);
+        /**
+         * Mock 객체를 이용할 때 해당 Mock 객체가 해당되는 매서드를 사용하면 true를 리턴해라
+         */
+        Mockito.when(usersRepository.save(Mockito.any(User.class))).thenReturn(true);
 
         // Act
         User user = userService.createUser(firstName, lastName, email, password, repeatPassword);
@@ -59,8 +65,12 @@ public class UserServiceTest {
         assertEquals(lastName, user.getLastName(), "User's last name is incorrect");
         assertEquals(email, user.getEmail(), "User's email is incorrect");
         assertNotNull(user.getId(), "User id is missing");
-        Mockito.verify(usersRepository)
-                .save(any(User.class));
+        // Mockito 검증, Mock 객체를 검증한다.
+        Mockito.verify(usersRepository,
+                        // 몇 번 했는지 검증, createuser에서는 1번만 한다.
+                        // 기본이 1이라 생략 가능하다.
+                        Mockito.times(1))
+                .save(Mockito.any(User.class));
     }
 
     @DisplayName("Empty first name causes correct exception")
